@@ -49,17 +49,15 @@ public:
             // TODO implement the Boris pusher
 
             //Mid-step Position
-            particle.position[0] += particle.v[0]*(dt_/2.0);
+            particle.position[0] += particle.v[0]*(this->dt_/2.0);
 
-            //I do not get how this is supposed to work or even if it is actually working
+
+            //Fields on particle
             double x = particle.position[0];
-            double dx = layout_->cell_size(Direction::X); //this line (return m_cell_size[dir_idx] ?)
+            double dx = this->layout_->cell_size(Direction::X);  
 
-            double domain_start = layout_->primal_dom_start(Direction::X)*dx; //and this line specifically
-            double normalised_pos = (x - domain_start)/dx;
-
-            int iCell = (int)normalised_pos;
-            double reminder = normalised_pos - iCell;
+            int iCell = (int)(x/dx);
+            double reminder = x/dx - iCell;
 
             //fields on particle (this i get)
             std::array<double, 3> E_half;
@@ -73,7 +71,7 @@ public:
             B_half[2] = interpolate(B.z, iCell, reminder);
 
             //Half electric acceleration
-            double q_dt_div_2m = (dt_*particle.charge)/(2.0*particle.mass);
+            double q_dt_div_2m = (this->dt_*particle.charge)/(2.0*particle.mass);
             std::array<double, 3> v_minus;
 
             v_minus[0] = particle.v[0] + q_dt_div_2m*E_half[0];
@@ -107,7 +105,7 @@ public:
             particle.v[2] = v_plus[2] + q_dt_div_2m*E_half[2];
 
             //Final position
-            particle.position[0] += particle.v[0] * (dt_/2.0);
+            particle.position[0] += particle.v[0] * (this->dt_/2.0);
             
             
             
